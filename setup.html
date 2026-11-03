@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Configurar senha · Radar da Viagem</title>
+<style>
+:root{--bg:#0F1B2D;--card:#FFFFFF;--ink:#1D2433;--muted:#5C6475;--line:#E3E0D8;--eu:#2F7BC4;--as:#E0483B;--ok:#1F9D5B;--warn:#B26B00}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:linear-gradient(120deg,#123E6B,#2F7BC4 40%,#7C4C9E 60%,#E0483B 85%);padding:24px 16px}
+.wrap{max-width:760px;margin:0 auto;background:var(--card);border-radius:20px;padding:28px;box-shadow:0 20px 50px -20px rgba(0,0,0,.5)}
+h1{margin:0 0 6px;font-size:26px}
+p{line-height:1.55}
+.muted{color:var(--muted)}
+.step{border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:16px}
+.step h2{margin:0 0 8px;font-size:17px}
+label{display:block;font-weight:600;margin:10px 0 4px}
+input{width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;font:inherit}
+input:focus{outline:none;border-color:var(--eu)}
+button{font:inherit;font-weight:700;border:0;border-radius:10px;padding:11px 16px;cursor:pointer;background:var(--ink);color:#fff}
+button.sec{background:#EEF2F7;color:var(--ink)}
+button:disabled{opacity:.5;cursor:not-allowed}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+textarea{width:100%;min-height:90px;font:12px ui-monospace,Menlo,monospace;border:1px solid var(--line);border-radius:10px;padding:10px;resize:vertical}
+.msg{margin-top:10px;font-weight:600}
+.msg.err{color:var(--as)} .msg.ok{color:var(--ok)}
+.warn{background:#FFF4DE;color:#6B4300;border-radius:10px;padding:10px 12px;font-size:14px}
+ol{padding-left:20px} li{margin:4px 0}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Configurar a senha do Radar</h1>
+  <p class="muted">Esta página roda só no seu navegador. A senha nunca sai daqui e não é enviada para ninguém, nem para o Claude. Faça isso uma única vez.</p>
+
+  <section class="step">
+    <h2>1. Escolha a senha do site</h2>
+    <p class="muted">Use pelo menos 12 caracteres. Você e o Thiago vão usar essa senha para entrar. Se ela for perdida, é preciso refazer esta configuração.</p>
+    <label for="p1">Senha</label><input id="p1" type="password" autocomplete="new-password">
+    <label for="p2">Repita a senha</label><input id="p2" type="password" autocomplete="new-password">
+    <div class="row"><button id="gen">Gerar as chaves</button></div>
+    <div class="msg" id="m1" role="status"></div>
+  </section>
+
+  <section class="step" id="out" hidden>
+    <h2>2. Dois arquivos para o repositório (podem ser enviados ao Claude)</h2>
+    <p class="muted">Eles não revelam nada sem a senha. Baixe e envie os dois para o Claude, ou coloque você mesma na pasta <code>keys/</code> do repositório.</p>
+    <label>keys/public.json</label><textarea id="pub" readonly></textarea>
+    <div class="row"><button class="sec" data-dl="pub" data-name="public.json">Baixar public.json</button><button class="sec" data-copy="pub">Copiar</button></div>
+    <label>keys/private.enc.json</label><textarea id="wrap" readonly></textarea>
+    <div class="row"><button class="sec" data-dl="wrap" data-name="private.enc.json">Baixar private.enc.json</button><button class="sec" data-copy="wrap">Copiar</button></div>
+
+    <h2 style="margin-top:22px">3. Segredo para o e-mail (só no GitHub, nunca envie a ninguém)</h2>
+    <div class="warn">Este texto abre os alertas para enviar por e-mail. Cole <b>apenas</b> no GitHub, em Settings → Secrets and variables → Actions → New repository secret, com o nome <code>ALERT_PRIVATE_KEY</code>. Depois feche esta página.</div>
+    <label>ALERT_PRIVATE_KEY</label><textarea id="secret" readonly></textarea>
+    <div class="row"><button class="sec" data-copy="secret">Copiar segredo</button></div>
+    <ol class="muted">
+      <li>No mesmo lugar, crie também <code>SMTP_USER</code> (o Gmail que vai enviar), <code>SMTP_PASS</code> (a senha de app de 16 letras desse Gmail) e <code>EMAIL_TO</code> (os dois e-mails separados por vírgula).</li>
+      <li>A senha de app se cria em myaccount.google.com → Segurança → Verificação em duas etapas → Senhas de app.</li>
+    </ol>
+  </section>
+</main>
+<script>
+const $ = (s) => document.querySelector(s);
+const b64 = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf)));
+const ITER = 600000;
+$("#gen").addEventListener("click", async () => {
+  const m = $("#m1"); m.className = "msg"; m.textContent = "";
+  const p1 = $("#p1").value, p2 = $("#p2").value;
+  if (p1.length < 12) { m.className = "msg err"; m.textContent = "A senha precisa ter pelo menos 12 caracteres."; return; }
+  if (p1 !== p2) { m.className = "msg err"; m.textContent = "As duas senhas estão diferentes."; return; }
+  $("#gen").disabled = true; m.textContent = "Gerando as chaves… isso leva alguns segundos.";
+  try {
+    const kp = await crypto.subtle.generateKey({ name: "RSA-OAEP", modulusLength: 3072, publicExponent: new Uint8Array([1, 0, 1]), hash: "SHA-256" }, true, ["encrypt", "decrypt"]);
+    const pubJwk = await crypto.subtle.exportKey("jwk", kp.publicKey);
+    const pkcs8 = await crypto.subtle.exportKey("pkcs8", kp.privateKey);
+    const privJwk = await crypto.subtle.exportKey("jwk", kp.privateKey);
+    const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+    const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(p1), "PBKDF2", false, ["deriveKey"]);
+    const kek = await crypto.subtle.deriveKey({ name: "PBKDF2", salt, iterations: ITER, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["encrypt"]);
+    const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, kek, pkcs8);
+    $("#pub").value = JSON.stringify({ kty: pubJwk.kty, n: pubJwk.n, e: pubJwk.e, alg: pubJwk.alg, ext: true, key_ops: ["encrypt"] });
+    $("#wrap").value = JSON.stringify({ v: 1, kdf: "PBKDF2-SHA256", iter: ITER, salt: b64(salt), iv: b64(iv), ct: b64(ct) });
+    $("#secret").value = btoa(JSON.stringify(privJwk));
+    $("#p1").value = ""; $("#p2").value = "";
+    $("#out").hidden = false; m.className = "msg ok"; m.textContent = "Pronto! Siga os passos 2 e 3 abaixo.";
+  } catch (e) { m.className = "msg err"; m.textContent = "Não foi possível gerar as chaves neste navegador. Tente pelo Chrome ou Safari atualizados."; }
+  $("#gen").disabled = false;
+});
+document.addEventListener("click", async (e) => {
+  const c = e.target.closest("[data-copy]");
+  if (c) { const t = $("#" + c.dataset.copy); try { await navigator.clipboard.writeText(t.value); c.textContent = "Copiado"; } catch { t.select(); c.textContent = "Selecionado: use Ctrl+C"; } setTimeout(() => c.textContent = c.dataset.copy === "secret" ? "Copiar segredo" : "Copiar", 2000); }
+  const d = e.target.closest("[data-dl]");
+  if (d) { const blob = new Blob([$("#" + d.dataset.dl).value], { type: "application/json" }); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = d.dataset.name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); }
+});
+</script>
+</body>
+</html>

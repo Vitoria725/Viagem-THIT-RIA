@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Viagem Thitória 2027</title>
+<style>
+:root{
+  --bg:#F3F1EC; --panel:#FFFFFF; --ink:#1D2433; --muted:#5F6676; --line:#E3DFD6; --soft:#F8F6F1;
+  --eu:#2F7BC4; --eu-d:#123E6B; --as:#E0483B; --as-d:#8E1B14; --gold:#F2B33D; --ok:#1F9D5B; --ok-bg:#E1F4EA; --warn:#B26B00; --warn-bg:#FFF2D9; --bad:#C2392D; --bad-bg:#FCE5E2;
+  --es:#C8102E; --fr:#1F3F99; --ch:#D52B1E; --it:#009246; --br:#1A8F4E;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#10141D; --panel:#19202D; --ink:#E9EBF0; --muted:#9BA3B4; --line:#2A3244; --soft:#1F2737;
+  --ok:#5FD195; --ok-bg:#153424; --warn:#F2B35B; --warn-bg:#3A2A12; --bad:#F2877B; --bad-bg:#3A1C19;
+  --es:#F0566C; --fr:#7E9BF0; --ch:#F06A5E; --it:#3CC47A; --br:#4FC983; color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.5}
+h1,h2,h3{margin:0;line-height:1.15}
+button{font:inherit;cursor:pointer}
+[hidden]{display:none!important}
+.mono{font-variant-numeric:tabular-nums}
+
+/* ---------- login ---------- */
+#login{min-height:100vh;display:grid;place-items:center;padding:24px 16px;
+  background:linear-gradient(120deg,#123E6B 0%,#2F7BC4 35%,#7C4C9E 55%,#E0483B 80%,#8E1B14 100%)}
+.lcard{width:min(420px,100%);background:var(--panel);border-radius:22px;padding:30px 26px;box-shadow:0 30px 60px -25px rgba(0,0,0,.55)}
+.flags{display:flex;gap:6px;flex-wrap:wrap}
+.flags span{width:28px;height:19px;border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.25);position:relative;overflow:hidden}
+.f-br{background:#009C3B}.f-br::before{content:"";position:absolute;inset:3px 5px;background:#FFDF00;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}.f-br::after{content:"";position:absolute;width:7px;height:7px;border-radius:50%;background:#002776;left:10.5px;top:6px}
+.f-es{background:linear-gradient(#AA151B 25%,#F1BF00 25% 75%,#AA151B 75%)}
+.f-fr{background:linear-gradient(90deg,#002395 33%,#fff 33% 66%,#ED2939 66%)}
+.f-ch{background:#D52B1E}.f-ch::before,.f-ch::after{content:"";position:absolute;background:#fff;left:50%;top:50%;transform:translate(-50%,-50%)}.f-ch::before{width:12px;height:4px}.f-ch::after{width:4px;height:12px}
+.f-it{background:linear-gradient(90deg,#009246 33%,#fff 33% 66%,#CE2B37 66%)}
+.f-va{background:linear-gradient(90deg,#FFE000 50%,#fff 50%)}.f-va::before{content:"";position:absolute;right:4px;top:5px;width:6px;height:8px;border-radius:2px;border:1.5px solid #C9A400}
+.lcard h1{font-size:26px;margin-top:16px}
+.lcard p{color:var(--muted);margin:6px 0 18px}
+.lcard label{display:block;font-weight:700;font-size:14px;margin-bottom:6px}
+.lcard input{width:100%;padding:13px 14px;border:1.5px solid var(--line);border-radius:12px;font:inherit;background:var(--panel);color:var(--ink)}
+.lcard input:focus{outline:none;border-color:var(--eu);box-shadow:0 0 0 3px rgba(47,123,196,.2)}
+.lbtn{width:100%;margin-top:14px;padding:13px;border:0;border-radius:12px;background:linear-gradient(90deg,var(--eu),#7C4C9E,var(--as));color:#fff;font-weight:800;font-size:16px}
+.lbtn:disabled{opacity:.6}
+.lerr{color:var(--bad);font-weight:600;font-size:14px;min-height:22px;margin-top:10px}
+.lfoot{font-size:12.5px;color:var(--muted);margin-top:14px;display:flex;gap:6px;align-items:center}
+
+/* ---------- cronômetro ---------- */
+.count{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.count div{min-width:78px;text-align:center;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.32);border-radius:14px;padding:10px 12px;backdrop-filter:blur(4px)}
+.count b{display:block;font-size:clamp(26px,4.5vw,40px);font-weight:800;font-variant-numeric:tabular-nums;line-height:1}
+.count small{font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.85}
+.lcount{display:flex;gap:6px;margin:14px 0 4px}
+.lcount div{flex:1;text-align:center;background:var(--soft);border-radius:10px;padding:8px 4px}
+.lcount b{display:block;font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
+.lcount small{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.brand{font-size:12px;letter-spacing:.22em;font-weight:800;text-transform:uppercase;opacity:.9}
+/* ---------- mapa ---------- */
+.mapwrap{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:10px;overflow-x:auto}
+.mapwrap svg{display:block;width:100%;min-width:560px;height:auto}
+.mapwrap .city{cursor:pointer}
+.legs-list{display:grid;gap:8px;margin-top:14px}
+.legrow{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.legrow .n{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--ink);color:var(--panel);font-weight:800;font-size:13px}
+.legrow small{display:block;color:var(--muted);font-size:12.5px}
+/* ---------- dia a dia ---------- */
+.daynav{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px;scrollbar-width:thin}
+.daynav button{flex:none;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:12px;padding:6px 10px;font-weight:700;font-size:12.5px;text-align:center;line-height:1.2}
+.daynav button small{display:block;font-weight:600;color:var(--muted);font-size:11px}
+.daynav button[aria-current="true"]{background:var(--c);color:#fff;border-color:var(--c)}
+.daynav button[aria-current="true"] small{color:rgba(255,255,255,.85)}
+.day{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:14px}
+@media (max-width:820px){.day{grid-template-columns:1fr}}
+.dayhead{border-radius:18px;padding:18px;color:#fff;background:var(--c);margin-bottom:12px}
+.dayhead small{font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.85;font-weight:700}
+.dayhead h3{font-size:clamp(20px,3vw,28px);margin:4px 0}
+.dayhead p{margin:0;opacity:.92}
+.stops{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.stop{display:grid;grid-template-columns:30px 54px minmax(0,1fr) auto;gap:10px;align-items:start;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.stop .num{width:26px;height:26px;border-radius:50%;background:var(--c);color:#fff;display:grid;place-items:center;font-weight:800;font-size:12px}
+.stop .hr{font-weight:800;font-size:13px;font-variant-numeric:tabular-nums;padding-top:3px}
+.stop b{display:block}
+.stop small{color:var(--muted);font-size:12.5px}
+.stop a{color:var(--eu);font-size:12.5px;font-weight:700;text-decoration:none}
+.tag{font-size:11px;font-weight:800;padding:3px 8px;border-radius:999px;white-space:nowrap}
+.tag.entrar{background:var(--ok-bg);color:var(--ok)} .tag.foto{background:#FBE9DF;color:#B5532A} .tag.sugestao,.tag.opcional{background:var(--soft);color:var(--muted)}
+.minimap{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:8px}
+.minimap svg{display:block;width:100%;height:auto}
+.gmaps{display:inline-flex;align-items:center;gap:6px;margin-top:10px;background:var(--ink);color:var(--panel);text-decoration:none;font-weight:700;font-size:13.5px;padding:9px 14px;border-radius:10px}
+/* ---------- passeios ---------- */
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chips button{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:6px 12px;font-weight:700;font-size:13px}
+.chips button[aria-pressed="true"]{background:var(--ink);color:var(--panel)}
+.tours{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr));gap:12px}
+.tour{background:var(--panel);border:1px solid var(--line);border-top:5px solid var(--c);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:6px}
+.tour .city{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--c)}
+.tour h3{font-size:16px}
+.tour .price{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums}
+.tour .row{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--muted)}
+.tour a{color:var(--eu);font-weight:700;font-size:13px;text-decoration:none}
+/* ---------- app ---------- */
+.wrap{max-width:1180px;margin:0 auto;padding:0 max(16px,env(safe-area-inset-left)) 40px max(16px,env(safe-area-inset-right))}
+.hero{color:#fff;background:linear-gradient(115deg,#123E6B 0%,#2F7BC4 40%,#7C4C9E 60%,#E0483B 85%);border-radius:0 0 26px 26px;margin-bottom:22px}
+.hero .wrap{padding-top:22px;padding-bottom:26px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.out{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:7px 14px;font-weight:700;font-size:13px}
+.hero h1{font-size:clamp(26px,4.4vw,42px);margin-top:14px}
+.hero p{opacity:.92;margin:8px 0 0;max-width:68ch}
+.pass{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.pass div{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);border-radius:12px;padding:8px 14px}
+.pass small{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.8}
+.pass strong{font-size:15px}
+nav.tabs{display:flex;gap:8px;flex-wrap:wrap;position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0;margin-bottom:6px}
+nav.tabs{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none}
+nav.tabs a{text-decoration:none;color:var(--ink);font-weight:700;font-size:13.5px;padding:8px 15px;border-radius:999px;background:var(--panel);border:1px solid var(--line);white-space:nowrap}
+nav.tabs a[aria-current="page"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.page{animation:pg .2s ease-out}@keyframes pg{from{opacity:0;transform:translateY(4px)}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.page{animation:none}}
+.mini{display:flex;flex-direction:column;gap:6px;border-left:6px solid var(--c)}
+.mini .big{font-size:28px;font-weight:800}
+.mini a{color:var(--eu);font-weight:700;font-size:13.5px;text-decoration:none}
+section{margin-bottom:26px}
+.sh{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.sh .ic{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;color:#fff;font-size:18px;flex:none}
+.sh h2{font-size:clamp(20px,2.8vw,26px)}
+.sh p{flex-basis:100%;margin:0;color:var(--muted);font-size:13.5px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 10px 30px -22px rgba(0,0,0,.35);min-width:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px}
+
+/* decisão */
+.decide{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:14px}
+@media (max-width:820px){.decide{grid-template-columns:1fr}}
+.verdict{border-radius:18px;padding:20px;color:#fff}
+.verdict.comprar{background:linear-gradient(135deg,#0E6B3B,#1F9D5B)}
+.verdict.esperar{background:linear-gradient(135deg,#123E6B,#2F7BC4)}
+.verdict.atencao{background:linear-gradient(135deg,#8A5300,#E09B22)}
+.verdict small{font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.85;font-weight:700}
+.verdict h3{font-size:clamp(22px,3vw,30px);margin:6px 0 8px}
+.verdict p{margin:0;opacity:.95}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.kpi .k{font-size:12px;color:var(--muted);font-weight:600}
+.kpi .v{font-size:clamp(20px,2.6vw,26px);font-weight:800;margin-top:2px}
+.kpi .s{font-size:12px;color:var(--muted)}
+
+/* linha do tempo dos trechos */
+.timeline{display:grid;gap:12px}
+.leg{display:grid;grid-template-columns:120px minmax(0,1fr) auto;gap:14px;align-items:center;background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--c);border-radius:16px;padding:14px 16px}
+@media (max-width:720px){.leg{grid-template-columns:1fr;gap:6px}}
+.leg .when{font-weight:800;font-size:13px;color:var(--c)}
+.leg .when small{display:block;color:var(--muted);font-weight:600}
+.leg h3{font-size:17px}
+.leg .how{font-size:13px;color:var(--muted)}
+.leg .nums{display:flex;gap:16px;flex-wrap:wrap;margin-top:6px;font-size:13px}
+.leg .nums span b{display:block;font-size:16px}
+.leg .right{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+@media (max-width:720px){.leg .right{align-items:flex-start;text-align:left}}
+.leg svg{display:block}
+.pill{font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.pill.comprar{background:var(--ok-bg);color:var(--ok)} .pill.perto{background:var(--warn-bg);color:var(--warn)} .pill.esperar{background:var(--soft);color:var(--muted)} .pill.sem{background:var(--soft);color:var(--muted)}
+.up{color:var(--bad)} .down{color:var(--ok)}
+
+/* tabelas */
+.tbl{overflow:auto;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+table{width:100%;border-collapse:collapse;min-width:720px}
+th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;font-size:14px;vertical-align:top}
+th{background:#1D2433;color:#fff;font-size:12px;letter-spacing:.06em;text-transform:uppercase;position:sticky;top:0}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tbody tr:nth-child(even){background:var(--soft)}
+td a{color:var(--eu)}
+.yr{display:inline-block;font-weight:800;font-size:12px;padding:2px 8px;border-radius:6px;color:#fff}
+.y2024{background:#6B7280}.y2025{background:#7C4C9E}.y2026{background:var(--ok)}
+.chart{position:relative;min-height:240px}
+.tip{position:absolute;pointer-events:none;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:12.5px;box-shadow:0 8px 20px -10px rgba(0,0,0,.4);white-space:nowrap}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:middle}
+.foot{font-size:12.5px;color:var(--muted);margin-top:24px}
+</style>
+</head>
+<body>
+
+<div id="login">
+  <form class="lcard" id="lform" autocomplete="off">
+    <div class="flags" aria-hidden="true"><span class="f-br"></span><span class="f-es"></span><span class="f-fr"></span><span class="f-ch"></span><span class="f-it"></span><span class="f-va" title="Vaticano"></span></div>
+    <h1>Viagem Thitória 2027</h1>
+    <div class="lcount" data-count><div><b data-d>—</b><small>dias</small></div><div><b data-h>—</b><small>horas</small></div><div><b data-m>—</b><small>min</small></div><div><b data-s>—</b><small>seg</small></div></div>
+    <p>para o embarque em Guarulhos. Área privada da Vitória e do Thiago: os dados ficam criptografados e só abrem com a senha.</p>
+    <label for="pw">Senha</label>
+    <input id="pw" type="password" autocomplete="current-password" required>
+    <button class="lbtn" id="lbtn" type="submit">Entrar</button>
+    <div class="lerr" id="lerr" role="alert"></div>
+    <div class="lfoot">🔒 A senha é verificada só no seu aparelho e nunca é enviada pela internet.</div>
+  </form>
+</div>
+
+<div id="app" hidden>
+  <header class="hero">
+    <div class="wrap">
+      <div class="topbar">
+        <div class="flags" aria-hidden="true"><span class="f-br"></span><span class="f-es"></span><span class="f-fr"></span><span class="f-ch"></span><span class="f-it"></span><span class="f-va" title="Vaticano"></span></div>
+        <button class="out" id="sair">Sair</button>
+      </div>
+      <div class="brand" style="margin-top:14px">Madri · Barcelona · Paris · Suíça · Como · Veneza · Roma · Vaticano</div>
+      <h1 style="margin-top:6px">VIAGEM THITÓRIA 2027</h1>
+      <div class="count" data-count aria-live="off"><div><b data-d>—</b><small>dias</small></div><div><b data-h>—</b><small>horas</small></div><div><b data-m>—</b><small>minutos</small></div><div><b data-s>—</b><small>segundos</small></div></div>
+      <p id="sub" style="margin-top:14px">—</p>
+      <div class="pass" id="pass"></div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <nav class="tabs" aria-label="Páginas">
+      <a href="#inicio" data-page="inicio">🏠 Início</a>
+      <a href="#mapa" data-page="mapa">🗺 Mapa da viagem</a>
+      <a href="#dias" data-page="dias">📅 Roteiro dia a dia</a>
+      <a href="#passagens" data-page="passagens">✈ Ida e volta</a>
+      <a href="#trechos" data-page="trechos">🚄 Trechos na Europa</a>
+      <a href="#passeios" data-page="passeios">🎟 Passeios</a>
+      <a href="#tabela" data-page="tabela">≡ Tabela</a>
+      <a href="#historico" data-page="historico">⟲ 2024 × 2025 × 2026</a>
+      <a href="#asia" data-page="asia">🌏 Ásia</a>
+    </nav>
+
+    <section class="page" id="inicio">
+      <div class="sh"><span class="ic" style="background:linear-gradient(135deg,#0E6B3B,#1F9D5B)">✓</span><h2>Quando comprar</h2><p>Resumo da última rodada do radar (manhã, meio-dia e noite).</p></div>
+      <div class="decide">
+        <div class="verdict" id="verdict"><small>Recomendação</small><h3 id="vt">—</h3><p id="vp">—</p></div>
+        <div class="kpis" id="kpis"></div>
+      </div>
+      <div class="sh" style="margin-top:22px"><span class="ic" style="background:linear-gradient(135deg,var(--br),var(--eu))">✈</span><h2>Passagens principais</h2><p>Só ida para Madri e só volta saindo de Roma. Toque em “Ida e volta” para ver os detalhes.</p></div>
+      <div class="grid" id="mini"></div>
+    </section>
+
+    <section class="page" id="mapa" hidden>
+      <div class="sh"><span class="ic" style="background:linear-gradient(135deg,var(--es),var(--fr),var(--ch),var(--it))">🗺</span><h2>Mapa da viagem</h2><p>O caminho completo, na ordem. Toque numa cidade para abrir o dia a dia.</p></div>
+      <div class="mapwrap"><svg id="eumap" viewBox="0 0 780 680" role="img" aria-label="Mapa da rota pela Europa"></svg></div>
+      <div class="legs-list" id="legslist"></div>
+    </section>
+
+    <section class="page" id="dias" hidden>
+      <div class="sh"><span class="ic" style="background:linear-gradient(135deg,#123E6B,#7C4C9E)">📅</span><h2>Roteiro dia a dia</h2><p>Os passeios que vocês marcaram, na ordem de cada dia, com mapa e rota no Google Maps.</p></div>
+      <div class="daynav" id="daynav"></div>
+      <div id="dayview"></div>
+    </section>
+
+    <section class="page" id="passagens" hidden>
+      <div class="sh"><span class="ic" style="background:linear-gradient(135deg,var(--br),var(--eu))">✈</span><h2>Ida para Madri e volta saindo de Roma</h2><p>Duas passagens só de ida, por pessoa. A meta é que as duas somadas fiquem em até R$ 3.300.</p></div>
+      <div class="kpis" id="combo" style="margin-bottom:14px"></div>
+      <div class="timeline" id="voos"></div>
+      <div class="card" id="multibox" style="margin-top:14px"><h3 style="font-size:16px">Para comparar: multidestino comprado junto</h3><p class="foot" style="margin-top:6px">Ida para Madri e volta de Roma na mesma reserva. Às vezes sai mais barato que duas passagens separadas; o radar registra quando encontrar.</p><div class="timeline" id="multi" style="margin-top:10px"></div></div>
+    </section>
+
+    <section class="page" id="trechos" hidden>
+      <div class="sh"><span class="ic" style="background:linear-gradient(135deg,var(--es),var(--fr),var(--ch),var(--it))">🚄</span><h2>Trechos dentro da Europa, na ordem</h2><p>Preço atual por pessoa, o anterior e o primeiro registrado. A linha mostra a evolução.</p></div>
+      <div class="timeline" id="legs"></div>
+    </section>
+
+    <section class="page" id="tabela" hidden>
+      <div class="sh"><span class="ic" style="background:#1D2433">≡</span><h2>Tabela comparativa</h2><p>Todos os trechos em uma tabela. Valores por pessoa; a coluna Casal é o dobro do preço atual.</p></div>
+      <div class="tbl"><table><thead><tr><th>#</th><th>Trecho</th><th>Data</th><th class="n">Entrada</th><th class="n">Anterior</th><th class="n">Atual</th><th class="n">Variação</th><th class="n">Menor visto</th><th class="n">Meta</th><th class="n">Casal</th><th>Status</th></tr></thead><tbody id="tb"></tbody></table></div>
+    </section>
+
+    <section class="page" id="historico" hidden>
+      <div class="sh"><span class="ic" style="background:linear-gradient(135deg,#6B7280,#7C4C9E)">⟲</span><h2>Panorama 2024 × 2025 × 2026</h2><p>Referência de preço São Paulo ⇄ Espanha/Itália (ida e volta, por pessoa), nas promoções da Black Friday. Ajuda a saber se o preço de hoje está bom.</p></div>
+      <div class="grid">
+        <div class="card"><h3 style="font-size:16px">Resumo por ano</h3><div class="tbl" style="margin-top:10px"><table style="min-width:420px"><thead><tr><th>Ano</th><th class="n">Média</th><th class="n">Menor</th><th>Dia do menor</th><th class="n">Maior</th><th class="n">Ofertas</th></tr></thead><tbody id="ty"></tbody></table></div><p class="foot" id="hnote"></p></div>
+        <div class="card"><h3 style="font-size:16px">Cada oferta no calendário da Black Friday</h3><div class="chart" id="hchart"></div><div class="legend"><span><i style="background:#6B7280"></i>2024</span><span><i style="background:#7C4C9E"></i>2025</span><span><i style="background:var(--ok)"></i>2026</span></div></div>
+      </div>
+      <details class="card" style="margin-top:14px"><summary style="cursor:pointer;font-weight:700">Ver todas as ofertas</summary><div class="tbl" style="margin-top:10px"><table><thead><tr><th>Ano</th><th>Data</th><th>Destino</th><th>Origem</th><th class="n">Por pessoa</th><th>Companhia</th><th>Fonte</th></tr></thead><tbody id="th"></tbody></table></div></details>
+    </section>
+
+    <section class="page" id="passeios" hidden>
+      <div class="sh"><span class="ic" style="background:linear-gradient(135deg,#C27C0E,var(--gold))">🎟</span><h2>Passeios: preços para o casal</h2><p>O radar confere os preços nos sites oficiais e mostra se subiram ou caíram. “Reservar antes” indica ingressos que costumam esgotar.</p></div>
+      <div class="kpis" id="tourkpis" style="margin-bottom:14px"></div>
+      <div class="chips" id="tourchips"></div>
+      <div class="tours" id="tours"></div>
+    </section>
+
+    <section class="page" id="asia" hidden>
+      <div class="sh"><span class="ic" style="background:linear-gradient(135deg,var(--as-d),var(--as))">🌏</span><h2>Ásia (só passagens)</h2><p>São Paulo → Pequim, volta de Tóquio, para comparar com a Europa.</p></div>
+      <div class="timeline" id="asialegs"></div>
+    </section>
+
+    <p class="foot" id="foot">—</p>
+  </main>
+</div>
+
+<script>
+"use strict";
+const $ = (s) => document.querySelector(s);
+const unb64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+const brl = (v) => v == null || isNaN(v) ? "—" : "R$ " + Math.round(v).toLocaleString("pt-BR");
+const dia = (s) => { if (!s) return "—"; const d = new Date(s.length <= 10 ? s + "T12:00:00" : s); return d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" }); };
+const quando = (s) => new Date(s).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+const el = (tag, attrs = {}, ...kids) => { const n = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) { if (k === "class") n.className = v; else if (k === "style") n.style.cssText = v; else n.setAttribute(k, v); } kids.flat().forEach((c) => n.append(c instanceof Node ? c : document.createTextNode(c ?? ""))); return n; };
+
+async function abrir(senha) {
+  const [wrapped, payload] = await Promise.all([
+    fetch("keys/private.enc.json", { cache: "no-store" }).then((r) => { if (!r.ok) throw new Error("setup"); return r.json(); }),
+    fetch("data/dados.enc.json", { cache: "no-store" }).then((r) => { if (!r.ok) throw new Error("dados"); return r.json(); }),
+  ]);
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(senha), "PBKDF2", false, ["deriveKey"]);
+  const kek = await crypto.subtle.deriveKey({ name: "PBKDF2", salt: unb64(wrapped.salt), iterations: wrapped.iter, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+  let pkcs8;
+  try { pkcs8 = await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(wrapped.iv) }, kek, unb64(wrapped.ct)); }
+  catch { throw new Error("senha"); }
+  const priv = await crypto.subtle.importKey("pkcs8", pkcs8, { name: "RSA-OAEP", hash: "SHA-256" }, false, ["decrypt"]);
+  const raw = await crypto.subtle.decrypt({ name: "RSA-OAEP" }, priv, unb64(payload.ek));
+  const aes = await crypto.subtle.importKey("raw", raw, { name: "AES-GCM" }, false, ["decrypt"]);
+  const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(payload.iv) }, aes, unb64(payload.ct));
+  return JSON.parse(new TextDecoder().decode(plain));
+}
+
+$("#lform").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const b = $("#lbtn"), err = $("#lerr"); err.textContent = ""; b.disabled = true; b.textContent = "Abrindo…";
+  try {
+    const dados = await abrir($("#pw").value);
+    $("#pw").value = "";
+    $("#login").hidden = true; $("#app").hidden = false;
+    render(dados); mostrar();
+  } catch (ex) {
+    err.textContent = ex.message === "senha" ? "Senha incorreta. Tente de novo." :
+      ex.message === "setup" ? "O site ainda não foi configurado: falta a senha (página setup.html)." :
+      ex.message === "dados" ? "Ainda não há dados: o radar ainda não fez a primeira leitura." : "Não foi possível abrir os dados neste navegador.";
+  }
+  b.disabled = false; b.textContent = "Entrar";
+});
+$("#sair").addEventListener("click", () => { location.hash = ""; location.reload(); });
+const PAGES = ["inicio", "mapa", "dias", "passagens", "trechos", "passeios", "tabela", "historico", "asia"];
+function mostrar() {
+  const id = PAGES.includes(location.hash.slice(1)) ? location.hash.slice(1) : "inicio";
+  PAGES.forEach((p) => { const sec = document.getElementById(p); if (sec) sec.hidden = p !== id; });
+  document.querySelectorAll("nav.tabs a").forEach((a) => a.setAttribute("aria-current", a.dataset.page === id ? "page" : "false"));
+  window.scrollTo({ top: 0 });
+  if (id === "historico" && window.__H) histChart(window.__H);
+  if (id === "dias" && window.__D) renderDias(window.__D);
+}
+window.addEventListener("hashchange", mostrar);
+
+/* ---------- cálculo ---------- */
+const CORES = { br: "var(--br)", es: "var(--es)", fr: "var(--fr)", ch: "var(--ch)", it: "var(--it)", as: "var(--as)" };
+function resumoTrecho(t, leituras) {
+  const r = leituras.filter((x) => x.trecho === t.id && x.preco_pp != null).sort((a, b) => a.quando.localeCompare(b.quando));
+  if (!r.length) return { t, r, status: "sem" };
+  const atual = r[r.length - 1], anterior = r.length > 1 ? r[r.length - 2] : null, entrada = r[0];
+  const menor = r.reduce((a, b) => (b.preco_pp < a.preco_pp ? b : a));
+  const variacao = anterior ? (atual.preco_pp - anterior.preco_pp) / anterior.preco_pp : null;
+  let status = "esperar";
+  if (t.meta_pp && atual.preco_pp <= t.meta_pp) status = "comprar";
+  else if (atual.preco_pp <= menor.preco_pp * 1.03) status = "perto";
+  return { t, r, atual, anterior, entrada, menor, variacao, status };
+}
+const STATUS = { comprar: "Abaixo da meta: comprar", perto: "Perto do menor preço", esperar: "Esperar", sem: "Sem leitura ainda" };
+
+function spark(r, cor, meta) {
+  const W = 180, H = 46, p = 4;
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.setAttribute("width", W); svg.setAttribute("height", H);
+  if (r.length < 2) return svg;
+  const vs = r.map((x) => x.preco_pp).concat(meta ? [meta] : []);
+  const mn = Math.min(...vs), mx = Math.max(...vs), sy = (v) => H - p - ((v - mn) / ((mx - mn) || 1)) * (H - 2 * p), sx = (i) => p + (i / (r.length - 1)) * (W - 2 * p);
+  if (meta) { const l = document.createElementNS(svg.namespaceURI, "line"); l.setAttribute("x1", p); l.setAttribute("x2", W - p); l.setAttribute("y1", sy(meta)); l.setAttribute("y2", sy(meta)); l.setAttribute("stroke", "var(--muted)"); l.setAttribute("stroke-dasharray", "4 3"); svg.append(l); }
+  const path = document.createElementNS(svg.namespaceURI, "path");
+  path.setAttribute("d", r.map((x, i) => `${i ? "L" : "M"}${sx(i).toFixed(1)},${sy(x.preco_pp).toFixed(1)}`).join(""));
+  path.setAttribute("fill", "none"); path.setAttribute("stroke", cor); path.setAttribute("stroke-width", "2.2"); path.setAttribute("stroke-linejoin", "round"); path.setAttribute("stroke-linecap", "round");
+  svg.append(path);
+  const c = document.createElementNS(svg.namespaceURI, "circle"); c.setAttribute("cx", sx(r.length - 1)); c.setAttribute("cy", sy(r[r.length - 1].preco_pp)); c.setAttribute("r", 3.5); c.setAttribute("fill", cor); svg.append(c);
+  return svg;
+}
+
+function legCard(s) {
+  const { t } = s, cor = CORES[t.pais] || "var(--eu)";
+  const nums = el("div", { class: "nums mono" },
+    el("span", {}, "Atual", el("b", {}, brl(s.atual?.preco_pp))),
+    el("span", {}, "Anterior", el("b", {}, brl(s.anterior?.preco_pp))),
+    el("span", {}, "Entrada", el("b", {}, brl(s.entrada?.preco_pp))),
+    el("span", {}, "Menor", el("b", {}, brl(s.menor?.preco_pp))),
+    el("span", {}, "Meta", el("b", {}, brl(t.meta_pp))));
+  const varTxt = s.variacao == null ? "" : (s.variacao > 0 ? "▲ " : s.variacao < 0 ? "▼ " : "= ") + Math.abs(s.variacao * 100).toFixed(1).replace(".", ",") + "% desde a leitura anterior";
+  return el("div", { class: "leg", style: `--c:${cor}` },
+    el("div", { class: "when" }, dia(t.data), el("small", {}, t.modo)),
+    el("div", {}, el("h3", {}, `${t.ordem ? t.ordem + ". " : ""}${t.de} → ${t.para}`), el("div", { class: "how" }, t.obs || ""), nums,
+      s.atual ? el("div", { class: "how" }, `${s.atual.companhia || ""} · ${s.atual.fonte || ""} · lido em ${quando(s.atual.quando)}`) : ""),
+    el("div", { class: "right" }, el("span", { class: "pill " + s.status }, STATUS[s.status]), spark(s.r, cor, t.meta_pp),
+      el("span", { class: "how " + (s.variacao > 0 ? "up" : s.variacao < 0 ? "down" : "") }, varTxt)));
+}
+
+function render(D) {
+  window.__D = D;
+  const trechos = (D.trechos || []).filter((t) => !t.grupo || t.grupo === "voo" || t.grupo === "europa").sort((a, b) => a.ordem - b.ordem);
+  const asia = (D.trechos || []).filter((t) => t.grupo === "asia");
+  const multiT = (D.trechos || []).filter((t) => t.grupo === "multi");
+  const L = D.leituras || [];
+  const res = trechos.map((t) => resumoTrecho(t, L));
+  const resA = asia.map((t) => resumoTrecho(t, L));
+  const resM = multiT.map((t) => resumoTrecho(t, L));
+  const voos = res.filter((x) => x.t.grupo === "voo"), europa = res.filter((x) => x.t.grupo !== "voo");
+
+  $("#sub").textContent = D.viagem?.descricao || "";
+  $("#pass").replaceChildren(...[["Ida", D.viagem?.ida], ["Volta", D.viagem?.volta], ["Viajantes", D.viagem?.viajantes], ["Radar", D.viagem?.radar]].map(([k, v]) => el("div", {}, el("small", {}, k), el("strong", {}, v || "—"))));
+
+  const rec = D.recomendacao || {};
+  $("#verdict").className = "verdict " + (rec.nivel || "esperar");
+  $("#vt").textContent = rec.titulo || "Aguardando as primeiras leituras";
+  $("#vp").textContent = rec.texto || "";
+
+  const conta = (s) => !s.t.incluido && !s.t.alternativa && s.t.grupo !== "multi";
+  const somaAtual = res.filter((s) => s.atual && conta(s)).reduce((a, s) => a + s.atual.preco_pp, 0);
+  const somaMenor = res.filter((s) => s.menor && conta(s)).reduce((a, s) => a + s.menor.preco_pp, 0);
+  const somaMeta = trechos.filter((t) => !t.incluido && !t.alternativa).reduce((a, t) => a + (t.meta_pp || 0), 0);
+  const nComprar = res.filter((s) => s.status === "comprar").length;
+  $("#kpis").replaceChildren(
+    el("div", { class: "kpi" }, el("div", { class: "k" }, "Todos os trechos hoje (casal)"), el("div", { class: "v mono" }, brl(somaAtual * 2)), el("div", { class: "s" }, "soma dos preços atuais × 2")),
+    el("div", { class: "kpi" }, el("div", { class: "k" }, "Se comprasse no menor visto"), el("div", { class: "v mono", style: "color:var(--ok)" }, brl(somaMenor * 2)), el("div", { class: "s" }, "economia de " + brl((somaAtual - somaMenor) * 2))),
+    el("div", { class: "kpi" }, el("div", { class: "k" }, "Meta dos trechos (casal)"), el("div", { class: "v mono" }, brl(somaMeta * 2)), el("div", { class: "s" }, "soma das metas × 2")),
+    el("div", { class: "kpi" }, el("div", { class: "k" }, "Trechos abaixo da meta"), el("div", { class: "v mono" }, `${nComprar} de ${trechos.length}`), el("div", { class: "s" }, "status “comprar”")));
+
+  $("#legs").replaceChildren(...europa.map(legCard));
+  $("#voos").replaceChildren(...voos.map(legCard));
+  $("#multi").replaceChildren(...resM.map(legCard));
+  $("#multibox").hidden = !resM.length;
+  $("#asialegs").replaceChildren(...resA.map(legCard));
+  const idaVolta = voos.reduce((a, x) => a + (x.atual ? x.atual.preco_pp : NaN), 0);
+  const idaVoltaMenor = voos.reduce((a, x) => a + (x.menor ? x.menor.preco_pp : NaN), 0);
+  const metaIV = voos.reduce((a, x) => a + (x.t.meta_pp || 0), 0);
+  $("#combo").replaceChildren(
+    el("div", { class: "kpi" }, el("div", { class: "k" }, "Ida + volta hoje (por pessoa)"), el("div", { class: "v mono" }, brl(idaVolta)), el("div", { class: "s" }, isNaN(idaVolta) ? "falta preço de um dos trechos" : "casal: " + brl(idaVolta * 2))),
+    el("div", { class: "kpi" }, el("div", { class: "k" }, "Meta ida + volta (por pessoa)"), el("div", { class: "v mono" }, brl(metaIV)), el("div", { class: "s" }, isNaN(idaVolta) ? "—" : (idaVolta <= metaIV ? "dentro da meta ✓" : "falta " + brl(idaVolta - metaIV) + " por pessoa"))),
+    el("div", { class: "kpi" }, el("div", { class: "k" }, "Menor já visto (ida + volta)"), el("div", { class: "v mono", style: "color:var(--ok)" }, brl(idaVoltaMenor)), el("div", { class: "s" }, "por pessoa")),
+    el("div", { class: "kpi" }, el("div", { class: "k" }, "Multidestino (referência)"), el("div", { class: "v mono" }, brl(resM[0]?.atual?.preco_pp)), el("div", { class: "s" }, "ida e volta na mesma reserva")));
+  $("#mini").replaceChildren(...voos.map((x) => el("div", { class: "card mini", style: "--c:" + (CORES[x.t.pais] || "var(--eu)") },
+    el("div", { class: "k", style: "font-weight:700;color:var(--muted);font-size:13px" }, `${x.t.de} → ${x.t.para} · ${dia(x.t.data)}`),
+    el("div", { class: "big mono" }, brl(x.atual?.preco_pp)),
+    el("div", {}, el("span", { class: "pill " + x.status }, STATUS[x.status])),
+    el("div", { class: "foot", style: "margin:0" }, `Anterior ${brl(x.anterior?.preco_pp)} · Menor ${brl(x.menor?.preco_pp)} · Meta ${brl(x.t.meta_pp)}`),
+    el("a", { href: "#passagens" }, "Ver detalhes →"))));
+
+  $("#tb").replaceChildren(...res.map((s) => el("tr", {},
+    el("td", {}, String(s.t.ordem)), el("td", {}, `${s.t.de} → ${s.t.para}`), el("td", {}, dia(s.t.data)),
+    el("td", { class: "n" }, brl(s.entrada?.preco_pp)), el("td", { class: "n" }, brl(s.anterior?.preco_pp)), el("td", { class: "n" }, brl(s.atual?.preco_pp)),
+    el("td", { class: "n " + (s.variacao > 0 ? "up" : s.variacao < 0 ? "down" : "") }, s.variacao == null ? "—" : (s.variacao * 100).toFixed(1).replace(".", ",") + "%"),
+    el("td", { class: "n" }, s.menor ? `${brl(s.menor.preco_pp)} (${dia(s.menor.quando)})` : "—"), el("td", { class: "n" }, brl(s.t.meta_pp)),
+    el("td", { class: "n" }, s.atual ? brl(s.atual.preco_pp * 2) : "—"), el("td", {}, el("span", { class: "pill " + s.status }, STATUS[s.status])))));
+
+  const H = (D.historico || []).slice().sort((a, b) => a.data.localeCompare(b.data));
+  const anos = [...new Set(H.map((h) => h.ano))].sort();
+  $("#ty").replaceChildren(...anos.map((ano) => {
+    const r = H.filter((h) => h.ano === ano && h.janela_bf);
+    if (!r.length) return el("tr", {}, el("td", {}, el("span", { class: "yr y" + ano }, String(ano))), el("td", { colspan: "5" }, "Sem ofertas na janela"));
+    const mn = r.reduce((a, b) => (b.preco_pp < a.preco_pp ? b : a)), mx = r.reduce((a, b) => (b.preco_pp > a.preco_pp ? b : a));
+    return el("tr", {}, el("td", {}, el("span", { class: "yr y" + ano }, String(ano))), el("td", { class: "n" }, brl(r.reduce((a, b) => a + b.preco_pp, 0) / r.length)), el("td", { class: "n" }, brl(mn.preco_pp)), el("td", {}, dia(mn.data)), el("td", { class: "n" }, brl(mx.preco_pp)), el("td", { class: "n" }, String(r.length)));
+  }));
+  $("#hnote").textContent = D.notas_historico || "";
+  $("#th").replaceChildren(...H.map((h) => el("tr", {}, el("td", {}, el("span", { class: "yr y" + h.ano }, String(h.ano))), el("td", {}, dia(h.data)), el("td", {}, h.destino), el("td", {}, h.origem || ""), el("td", { class: "n" }, brl(h.preco_pp)), el("td", {}, h.companhia || ""), el("td", {}, h.url ? el("a", { href: h.url, target: "_blank", rel: "noopener" }, h.fonte || "link") : (h.fonte || "")))));
+  window.__H = H; histChart(H);
+
+  renderPasseios(D);
+  renderMapa(D, res);
+  renderDias(D);
+
+  $("#foot").textContent = `Última atualização: ${D.atualizado_em ? quando(D.atualizado_em) : "—"}. Valores aproximados em reais; confira sempre no site da companhia antes de comprar.`;
+}
+
+function histChart(H) {
+  const box = $("#hchart"); box.replaceChildren();
+  // posiciona cada oferta pelo dia em relação à Black Friday do próprio ano
+  const BF = { 2024: "2024-11-29", 2025: "2025-11-28", 2026: "2026-11-27" };
+  const pts = H.filter((h) => BF[h.ano]).map((h) => ({ ...h, dx: Math.round((new Date(h.data + "T12:00:00") - new Date(BF[h.ano] + "T12:00:00")) / 864e5) })).filter((h) => h.dx >= -30 && h.dx <= 7);
+  if (!pts.length) return;
+  const W = Math.max(300, box.clientWidth), Hh = 240, m = { t: 10, r: 10, b: 30, l: 62 };
+  const vs = pts.map((p) => p.preco_pp), mn = Math.min(...vs) * 0.92, mx = Math.max(...vs) * 1.05;
+  const sx = (d) => m.l + ((d + 30) / 37) * (W - m.l - m.r), sy = (v) => Hh - m.b - ((v - mn) / (mx - mn)) * (Hh - m.t - m.b);
+  const ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("viewBox", `0 0 ${W} ${Hh}`); svg.setAttribute("width", "100%");
+  const add = (tag, a) => { const n = document.createElementNS(ns, tag); for (const k in a) n.setAttribute(k, a[k]); svg.append(n); return n; };
+  const step = Math.ceil((mx - mn) / 4 / 100) * 100;
+  for (let v = Math.ceil(mn / step) * step; v <= mx; v += step) { add("line", { x1: m.l, x2: W - m.r, y1: sy(v), y2: sy(v), stroke: "var(--line)" }); const t = add("text", { x: m.l - 6, y: sy(v) + 4, "text-anchor": "end", "font-size": 11, fill: "var(--muted)" }); t.textContent = brl(v); }
+  [[-30, "30 dias antes", "start"], [-14, "2 semanas", "middle"], [0, "Black Friday", "end"], [4, "Terça", "start"]].forEach(([d, l, an]) => { add("line", { x1: sx(d), x2: sx(d), y1: m.t, y2: Hh - m.b, stroke: d === 0 ? "var(--ink)" : "var(--line)", "stroke-dasharray": d === 0 ? "5 4" : "2 4" }); const t = add("text", { x: sx(d) + (an === "end" ? -4 : an === "start" && d > 0 ? 4 : 0), y: Hh - 10, "text-anchor": an, "font-size": 11, fill: "var(--muted)" }); t.textContent = l; });
+  const cor = { 2024: "#6B7280", 2025: "#7C4C9E", 2026: "var(--ok)" };
+  const tip = el("div", { class: "tip" }); tip.hidden = true; box.append(tip);
+  pts.forEach((p) => { const c = add("circle", { cx: sx(p.dx), cy: sy(p.preco_pp), r: 6.5, fill: cor[p.ano], stroke: "var(--panel)", "stroke-width": 2 });
+    c.addEventListener("pointerenter", () => { tip.hidden = false; tip.textContent = `${dia(p.data)} · ${p.destino}: ${brl(p.preco_pp)} (${p.companhia || p.fonte})`; tip.style.left = Math.min(sx(p.dx) + 10, W - 260) + "px"; tip.style.top = Math.max(0, sy(p.preco_pp) - 36) + "px"; });
+    c.addEventListener("pointerleave", () => { tip.hidden = true; }); });
+  box.prepend(svg);
+}
+
+/* ---------- cronômetro (embarque 16/04/2027, madrugada em Guarulhos) ---------- */
+const EMBARQUE = new Date("2027-04-16T00:00:00-03:00");
+function tick() {
+  let ms = Math.max(0, EMBARQUE - new Date());
+  const d = Math.floor(ms / 864e5); ms -= d * 864e5;
+  const h = Math.floor(ms / 36e5); ms -= h * 36e5;
+  const m = Math.floor(ms / 6e4); ms -= m * 6e4;
+  const sec = Math.floor(ms / 1e3);
+  document.querySelectorAll("[data-count]").forEach((c) => {
+    c.querySelector("[data-d]").textContent = d;
+    c.querySelector("[data-h]").textContent = String(h).padStart(2, "0");
+    c.querySelector("[data-m]").textContent = String(m).padStart(2, "0");
+    c.querySelector("[data-s]").textContent = String(sec).padStart(2, "0");
+  });
+}
+tick(); setInterval(tick, 1000);
+
+const PAIS_COR = { es: "var(--es)", fr: "var(--fr)", ch: "var(--ch)", it: "var(--it)", br: "var(--br)" };
+const TIPO = { entrar: "Entrar", foto: "Só foto", sugestao: "Sugestão", opcional: "Opcional" };
+const semana = (s) => new Date(s + "T12:00:00").toLocaleDateString("pt-BR", { weekday: "short" }).replace(".", "");
+const ns = "http://www.w3.org/2000/svg";
+function svgEl(tag, a, parent) { const n = document.createElementNS(ns, tag); for (const k in a) n.setAttribute(k, a[k]); if (parent) parent.append(n); return n; }
+
+/* ---------- mapa da Europa ---------- */
+function renderMapa(D, res) {
+  const C = D.cidades || [], svg = $("#eumap"); svg.replaceChildren();
+  const W = 780, H = 680, lon0 = -6.5, lat0 = 50.5, k = 50, kx = k * Math.cos(45 * Math.PI / 180);
+  const P = (la, lo) => [40 + (lo - lon0) * kx, 30 + (lat0 - la) * k];
+  svgEl("rect", { width: W, height: H, rx: 14, fill: "var(--soft)" }, svg);
+  [["ESPANHA", 39.2, -1.6], ["FRANÇA", 46.4, 1.0], ["SUÍÇA", 46.45, 6.6], ["ITÁLIA", 43.4, 11.0], ["Mar Mediterrâneo", 39.7, 4.2]].forEach(([t, la, lo]) => {
+    const [x, y] = P(la, lo); const n = svgEl("text", { x, y, "text-anchor": "middle", "font-size": 12, "font-weight": 800, "letter-spacing": 2.5, fill: "var(--muted)", opacity: .45 }, svg); n.textContent = t; });
+  svgEl("defs", {}, svg).innerHTML = '<marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker>';
+  const legs = [["madri", "barcelona", "trem"], ["barcelona", "paris", "voo"], ["paris", "zurique", "trem"], ["zurique", "tirano", "pano"], ["tirano", "como", "trem"], ["como", "veneza", "trem"], ["veneza", "roma", "trem"]];
+  const byId = Object.fromEntries(C.map((c) => [c.id, c]));
+  legs.forEach(([a, b, m], i) => {
+    if (!byId[a] || !byId[b]) return;
+    const A = P(byId[a].lat, byId[a].lon), B = P(byId[b].lat, byId[b].lon), mx = (A[0] + B[0]) / 2, my = (A[1] + B[1]) / 2, dx = B[0] - A[0], dy = B[1] - A[1], bend = m === "voo" ? .2 : .08;
+    const cx = mx - dy * bend, cy = my + dx * bend;
+    const st = m === "voo" ? { stroke: "var(--muted)", "stroke-width": 2.2, "stroke-dasharray": "6 5" } : m === "pano" ? { stroke: "#C8102E", "stroke-width": 5 } : { stroke: "var(--ink)", "stroke-width": 2.8 };
+    svgEl("path", { d: `M${A[0]},${A[1]} Q${cx},${cy} ${B[0]},${B[1]}`, fill: "none", "stroke-linecap": "round", ...st, style: "color:var(--muted)", "marker-end": "url(#ar)" }, svg);
+    const lx = .25 * A[0] + .5 * cx + .25 * B[0], ly = .25 * A[1] + .5 * cy + .25 * B[1];
+    svgEl("circle", { cx: lx, cy: ly, r: 11, fill: "var(--ink)" }, svg);
+    const t = svgEl("text", { x: lx, y: ly + 4, "text-anchor": "middle", "font-size": 11, "font-weight": 800, fill: "var(--panel)" }, svg); t.textContent = i + 2;
+  });
+  // chegada e volta
+  const [mx0, my0] = P(byId.madri.lat, byId.madri.lon), [rx, ry] = P(byId.roma.lat, byId.roma.lon);
+  svgEl("path", { d: `M${mx0 - 70},${my0 + 70} L${mx0 - 10},${my0 + 10}`, stroke: "var(--br)", "stroke-width": 2.4, "stroke-dasharray": "6 5", fill: "none", style: "color:var(--br)", "marker-end": "url(#ar)" }, svg);
+  const t1 = svgEl("text", { x: mx0 - 72, y: my0 + 86, "font-size": 12, "font-weight": 800, fill: "var(--br)" }, svg); t1.textContent = "✈ 1 · de São Paulo";
+  svgEl("path", { d: `M${rx - 14},${ry + 6} L${rx - 100},${ry + 44}`, stroke: "var(--br)", "stroke-width": 2.4, "stroke-dasharray": "6 5", fill: "none", style: "color:var(--br)", "marker-end": "url(#ar)" }, svg);
+  const t2 = svgEl("text", { x: rx - 250, y: ry + 60, "font-size": 12, "font-weight": 800, fill: "var(--br)" }, svg); t2.textContent = "✈ 9 · para São Paulo";
+  const off = { madri: [0, 26, "middle"], barcelona: [14, 6, "start"], paris: [-14, -6, "end"], zurique: [-16, -10, "end"], tirano: [14, 2, "start"], como: [-16, 18, "end"], veneza: [16, -14, "start"], roma: [-14, 4, "end"] };
+  C.forEach((c) => {
+    const [x, y] = P(c.lat, c.lon), o = off[c.id] || [12, 4, "start"], r = c.noites ? 8 + c.noites * 2 : 6;
+    const g = svgEl("g", { class: "city", tabindex: 0, role: "link", "aria-label": c.nome }, svg);
+    svgEl("circle", { cx: x, cy: y, r, fill: PAIS_COR[c.pais], stroke: "var(--panel)", "stroke-width": 3 }, g);
+    const n = svgEl("text", { x: x + o[0], y: y + o[1], "text-anchor": o[2], "font-size": 16, "font-weight": 800, fill: "var(--ink)", "paint-order": "stroke", stroke: "var(--soft)", "stroke-width": 4 }, g); n.textContent = c.nome;
+    const nn = svgEl("text", { x: x + o[0], y: y + o[1] + 15, "text-anchor": o[2], "font-size": 11.5, "font-weight": 700, fill: "var(--muted)", "paint-order": "stroke", stroke: "var(--soft)", "stroke-width": 3 }, g); nn.textContent = c.noites ? `${c.noites} ${c.noites > 1 ? "noites" : "noite"}` : "passagem";
+    const go = () => { const i = (D.roteiro || []).findIndex((d) => d.cidade === c.id); if (i >= 0) { window.__dia = i; location.hash = "dias"; } };
+    g.addEventListener("click", go); g.addEventListener("keydown", (e) => { if (e.key === "Enter") go(); });
+  });
+  // Vaticano (país dentro de Roma): marcador próprio ao lado de Roma
+  if (byId.roma) {
+    const [vx, vy] = P(byId.roma.lat, byId.roma.lon);
+    const g = svgEl("g", { class: "city", tabindex: 0, role: "link", "aria-label": "Vaticano" }, svg);
+    svgEl("line", { x1: vx, y1: vy + 10, x2: vx, y2: vy + 46, stroke: "#C9A400", "stroke-width": 1.5 }, g);
+    svgEl("rect", { x: vx - 9, y: vy + 46, width: 18, height: 13, rx: 2, fill: "#fff", stroke: "#C9A400", "stroke-width": 1 }, g);
+    svgEl("rect", { x: vx - 9, y: vy + 46, width: 9, height: 13, rx: 2, fill: "#FFE000" }, g);
+    const t = svgEl("text", { x: vx + 30, y: vy + 78, "text-anchor": "end", "font-size": 15, "font-weight": 800, fill: "var(--ink)", "paint-order": "stroke", stroke: "var(--soft)", "stroke-width": 4 }, g); t.textContent = "Vaticano";
+    const t2 = svgEl("text", { x: vx + 30, y: vy + 92, "text-anchor": "end", "font-size": 11.5, "font-weight": 700, fill: "var(--muted)", "paint-order": "stroke", stroke: "var(--soft)", "stroke-width": 3 }, g); t2.textContent = "país dentro de Roma · 30/04";
+    const goV = () => { const i = (D.roteiro || []).findIndex((d) => d.data === "2027-04-30"); if (i >= 0) { window.__dia = i; location.hash = "dias"; } };
+    g.addEventListener("click", goV); g.addEventListener("keydown", (e) => { if (e.key === "Enter") goV(); });
+  }
+  // lista dos trechos com preço do radar
+  const R = Object.fromEntries(res.map((x) => [x.t.id, x]));
+  const rows = [["ida-gru-mad", "São Paulo → Madri", "Voo só de ida · 16/04"], ["mad-bcn", "Madri → Barcelona", "Trem-bala · 18/04"], ["bcn-par", "Barcelona → Paris", "Voo cedo · 21/04"], ["par-zrh", "Paris → Zurique", "TGV Lyria · 25/04"], ["zrh-tir", "Zurique → Tirano", "Bernina Express · 26/04"], ["tir-mil", "Tirano → Lago de Como", "Trem regional · 26/04"], ["mil-vce", "Como/Milão → Veneza", "Trem-bala · 27/04"], ["vce-rom", "Veneza → Roma", "Trem-bala · 29/04"], ["volta-rom-gru", "Roma → São Paulo", "Voo só de ida · 02/05"]];
+  $("#legslist").replaceChildren(...rows.map(([id, t, sub], i) => { const x = R[id];
+    return el("div", { class: "legrow" }, el("span", { class: "n" }, String(i + 1)), el("div", {}, el("b", {}, t), el("small", {}, sub)),
+      el("div", { style: "text-align:right" }, el("b", { class: "mono" }, x && x.atual ? brl(x.atual.preco_pp) + " p/ pessoa" : "aguardando preço"), el("small", {}, x ? STATUS[x.status] : ""))); }));
+}
+
+/* ---------- dia a dia ---------- */
+function renderDias(D) {
+  const dias = D.roteiro || [], cid = Object.fromEntries((D.cidades || []).map((c) => [c.id, c])), pas = Object.fromEntries((D.passeios || []).map((p) => [p.id, p]));
+  if (window.__dia == null) window.__dia = 0;
+  const show = (i) => {
+    window.__dia = i;
+    const d = dias[i], c = cid[d.cidade] || {}, cor = PAIS_COR[c.pais] || "var(--eu)";
+    $("#daynav").querySelectorAll("button").forEach((b, j) => b.setAttribute("aria-current", j === i ? "true" : "false"));
+    const stops = d.paradas.filter((p) => p.lat != null);
+    let custo = 0;
+    const lis = d.paradas.map((p, j) => {
+      const ps = p.passeio ? pas[p.passeio] : null; if (ps && p.tipo === "entrar") custo += ps.preco_casal || 0;
+      const maps = `https://www.google.com/maps/search/?api=1&query=${p.lat},${p.lon}`;
+      return el("li", { class: "stop", style: `--c:${cor}` }, el("span", { class: "num" }, String(j + 1)), el("span", { class: "hr" }, p.hora),
+        el("div", {}, el("b", {}, p.nome), el("small", {}, `⏱ ${p.dur}${p.nota ? " · " + p.nota : ""}`), el("div", {}, el("a", { href: maps, target: "_blank", rel: "noopener" }, "📍 Ver no mapa"))),
+        el("div", { style: "text-align:right;display:flex;flex-direction:column;gap:4px;align-items:flex-end" }, el("span", { class: "tag " + p.tipo }, TIPO[p.tipo] || p.tipo), ps ? el("span", { class: "mono", style: "font-weight:800;font-size:13px" }, brl(ps.preco_casal)) : ""));
+    });
+    const way = stops.slice(0, 10).map((p) => `${p.lat},${p.lon}`);
+    const route = way.length > 1 ? `https://www.google.com/maps/dir/?api=1&origin=${way[0]}&destination=${way[way.length - 1]}${way.length > 2 ? "&waypoints=" + way.slice(1, -1).join("%7C") : ""}&travelmode=transit` : null;
+    $("#dayview").replaceChildren(
+      el("div", { class: "dayhead", style: `--c:${cor}` }, el("small", {}, `Dia ${i + 1} · ${semana(d.data)} ${dia(d.data)} · ${c.nome || ""}`), el("h3", {}, d.titulo), d.nota ? el("p", {}, d.nota) : ""),
+      el("div", { class: "day" },
+        el("div", {}, el("ul", { class: "stops" }, lis), el("p", { class: "foot", style: "margin-top:10px" }, `Ingressos do dia (casal): ${brl(custo)}`)),
+        el("div", {}, miniMapa(stops, cor), route ? el("a", { class: "gmaps", href: route, target: "_blank", rel: "noopener" }, "🧭 Abrir a rota do dia no Google Maps") : "",
+          el("div", { style: "display:flex;gap:8px;margin-top:12px" },
+            i > 0 ? el("button", { class: "out", style: "background:var(--panel);color:var(--ink);border-color:var(--line)" }, "← Dia anterior") : "",
+            i < dias.length - 1 ? el("button", { class: "out", style: "background:var(--ink);color:var(--panel);border-color:var(--ink)" }, "Próximo dia →") : ""))));
+    const btns = $("#dayview").querySelectorAll(".day button.out");
+    btns.forEach((b) => b.addEventListener("click", () => { show(b.textContent.startsWith("←") ? i - 1 : i + 1); window.scrollTo({ top: $("#dias").offsetTop - 10 }); }));
+  };
+  $("#daynav").replaceChildren(...dias.map((d, i) => { const c = cid[d.cidade] || {}; const b = el("button", { style: `--c:${PAIS_COR[c.pais] || "var(--eu)"}` }, `${semana(d.data)} ${d.data.slice(8, 10)}/${d.data.slice(5, 7)}`, el("small", {}, c.nome || "")); b.addEventListener("click", () => show(i)); return b; }));
+  show(Math.min(window.__dia, dias.length - 1));
+}
+function miniMapa(stops, cor) {
+  const box = el("div", { class: "minimap" }); if (!stops.length) return box;
+  const W = 420, H = 300, pad = 34, lat0 = stops.reduce((a, p) => a + p.lat, 0) / stops.length, kx = Math.cos(lat0 * Math.PI / 180);
+  const xs = stops.map((p) => p.lon * kx), ys = stops.map((p) => p.lat);
+  const minx = Math.min(...xs), maxx = Math.max(...xs), miny = Math.min(...ys), maxy = Math.max(...ys);
+  const sc = Math.min((W - 2 * pad) / ((maxx - minx) || 1e-3), (H - 2 * pad) / ((maxy - miny) || 1e-3));
+  const ox = (W - (maxx - minx) * sc) / 2, oy = (H - (maxy - miny) * sc) / 2;
+  const P = (p) => [ox + (p.lon * kx - minx) * sc, H - (oy + (p.lat - miny) * sc)];
+  const svg = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Mapa das paradas do dia" }); box.append(svg);
+  svgEl("rect", { width: W, height: H, rx: 12, fill: "var(--soft)" }, svg);
+  for (let i = 1; i < 6; i++) { svgEl("line", { x1: (W / 6) * i, x2: (W / 6) * i, y1: 0, y2: H, stroke: "var(--line)", "stroke-width": .6 }, svg); svgEl("line", { y1: (H / 6) * i, y2: (H / 6) * i, x1: 0, x2: W, stroke: "var(--line)", "stroke-width": .6 }, svg); }
+  const pts = stops.map(P);
+  if (pts.length > 1) svgEl("path", { d: "M" + pts.map((p) => p.map((v) => v.toFixed(1)).join(",")).join(" L"), fill: "none", stroke: cor, "stroke-width": 3, "stroke-dasharray": "2 6", "stroke-linecap": "round" }, svg);
+  const placed = [];
+  stops.forEach((p, i) => { const [x, y] = pts[i];
+    svgEl("circle", { cx: x, cy: y, r: 11, fill: cor, stroke: "var(--panel)", "stroke-width": 2.5 }, svg);
+    const t = svgEl("text", { x, y: y + 4, "text-anchor": "middle", "font-size": 11, "font-weight": 800, fill: "#fff" }, svg); t.textContent = i + 1;
+    const right = x < W - 140; let ly = y + 4; placed.forEach(([px, py]) => { if (Math.abs(px - x) < 120 && Math.abs(py - ly) < 13) ly += 14; }); placed.push([x, ly]);
+    const lab = svgEl("text", { x: right ? x + 15 : x - 15, y: ly, "text-anchor": right ? "start" : "end", "font-size": 11.5, "font-weight": 700, fill: "var(--ink)", "paint-order": "stroke", stroke: "var(--soft)", "stroke-width": 3 }, svg);
+    lab.textContent = p.nome.length > 26 ? p.nome.slice(0, 25) + "…" : p.nome; });
+  return box;
+}
+
+/* ---------- passeios ---------- */
+function renderPasseios(D) {
+  const L = D.passeios || [], cidades = [...new Set(L.map((p) => p.cidade))];
+  const cor = { Madri: "var(--es)", Barcelona: "var(--es)", Paris: "var(--fr)", Zurique: "var(--ch)", "Suíça": "var(--ch)" };
+  const quando = {}; (D.roteiro || []).forEach((d) => d.paradas.forEach((p) => { if (p.passeio && !quando[p.passeio]) quando[p.passeio] = d.data; }));
+  const total = L.filter((p) => !/opcional/i.test(p.nome)).reduce((a, p) => a + (p.preco_casal || 0), 0);
+  const conf = L.filter((p) => p.status === "Conferido").length, subiu = L.filter((p) => p.anterior_casal && p.preco_casal > p.anterior_casal).length, caiu = L.filter((p) => p.anterior_casal && p.preco_casal < p.anterior_casal).length;
+  $("#tourkpis").replaceChildren(
+    el("div", { class: "kpi" }, el("div", { class: "k" }, "Total dos passeios (casal)"), el("div", { class: "v mono" }, brl(total)), el("div", { class: "s" }, "sem os opcionais")),
+    el("div", { class: "kpi" }, el("div", { class: "k" }, "Conferidos no site oficial"), el("div", { class: "v mono" }, `${conf} de ${L.length}`), el("div", { class: "s" }, "os demais são estimativas")),
+    el("div", { class: "kpi" }, el("div", { class: "k" }, "Subiram"), el("div", { class: "v mono up" }, String(subiu)), el("div", { class: "s" }, "desde a última conferência")),
+    el("div", { class: "kpi" }, el("div", { class: "k" }, "Caíram"), el("div", { class: "v mono down" }, String(caiu)), el("div", { class: "s" }, "desde a última conferência")));
+  let filtro = window.__tourf || "Todas";
+  const draw = () => {
+    $("#tourchips").querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", b.textContent === filtro ? "true" : "false"));
+    $("#tours").replaceChildren(...L.filter((p) => filtro === "Todas" || p.cidade === filtro).map((p) => {
+      const v = p.anterior_casal ? (p.preco_casal - p.anterior_casal) / p.anterior_casal : null;
+      return el("div", { class: "tour", style: `--c:${cor[p.cidade] || "var(--it)"}` }, el("span", { class: "city" }, p.cidade + (quando[p.id] ? " · " + dia(quando[p.id]).slice(0, 5) : "")), el("h3", {}, p.nome),
+        el("div", { class: "price" }, brl(p.preco_casal)),
+        el("div", { class: "row" }, el("span", {}, "Anterior: " + brl(p.anterior_casal)), el("span", { class: v > 0 ? "up" : v < 0 ? "down" : "" }, v == null ? "sem mudança" : (v > 0 ? "▲ " : "▼ ") + Math.abs(v * 100).toFixed(1).replace(".", ",") + "%")),
+        el("div", { class: "row" }, el("span", { class: "pill " + (p.status === "Conferido" ? "comprar" : "esperar") }, p.status || "Estimado"), p.reserva ? el("span", { class: "pill perto" }, "Reservar antes") : el("span", {}, "")),
+        p.site ? el("a", { href: p.site, target: "_blank", rel: "noopener" }, "Site oficial ↗") : "");
+    }));
+  };
+  $("#tourchips").replaceChildren(...["Todas", ...cidades].map((c) => { const b = el("button", { "aria-pressed": "false" }, c); b.addEventListener("click", () => { filtro = window.__tourf = c; draw(); }); return b; }));
+  draw();
+}
+</script>
+</body>
+</html>
